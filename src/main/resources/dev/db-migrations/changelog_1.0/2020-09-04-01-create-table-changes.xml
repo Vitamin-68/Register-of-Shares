@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="create_table_changes_if_not_exists" author="Vitaly Mosin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="changes"/>
+            </not>
+        </preConditions>
+        <createTable tableName="changes">
+            <column name="edrpou" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="field_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="old_value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="new_value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="clear_table_changes" author="Vitaly Mosin">
+        <delete tableName="changes"/>
+    </changeSet>
+
+</databaseChangeLog>
