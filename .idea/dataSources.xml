@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="persistence-unit-shares/Hibernate" uuid="f28cb15a-4149-4796-9818-53e2b04dcc08">
+      <driver-ref>h2.unified</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>Hibernate
+
+E:/IDEA_WorkSpace/registerOfShares/src/main/resources/META-INF/persistence.xml</remarks>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:file:./target/classes/dev/shares</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="persistence-unit-changes/Hibernate" uuid="4062cc41-804a-4a67-a894-e0a40f86bcbb">
+      <driver-ref>h2.unified</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>Hibernate
+
+E:/IDEA_WorkSpace/registerOfShares/src/main/resources/META-INF/persistence.xml</remarks>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:file:./target/classes/dev/changes</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="persistence-unit/Hibernate" uuid="a8ebb189-b340-47fb-8a36-1b47a21df18f">
+      <driver-ref>h2.unified</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>Hibernate
+
+E:/IDEA_WorkSpace/registerOfShares/src/main/resources/META-INF/persistence.xml</remarks>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:file:./target/classes/dev/shares</jdbc-url>
+    </data-source>
+  </component>
+</project>

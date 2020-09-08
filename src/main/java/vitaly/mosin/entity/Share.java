@@ -1,12 +1,15 @@
 package vitaly.mosin.entity;
 
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
+@Table(name = "shares")
 public class Share {
     @Id
     private int edrpou;

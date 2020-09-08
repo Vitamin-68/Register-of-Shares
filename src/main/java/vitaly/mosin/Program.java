@@ -17,28 +17,20 @@ import java.util.List;
 
 public class Program {
     public static void main(String[] args) {
-
         try {
             Class.forName("org.h2.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         Connection connShares = ConnectionDB.getConnect("shares");
-        Connection connChanges = ConnectionDB.getConnect("changes");
-
-        Share sh = new Share();
-
-
         Gson gs = new Gson();
-
-
         String strSql = "insert into SHARES (EDRPOU, quantity, price, cost, date, comment, status) " +
                 "values (?,?,?,?,?,?,?)";
         try {
-            Type listOfMyClassObject = new TypeToken<ArrayList<Share>>() {}.getType();
-            List<Share> shareList = gs.fromJson(new FileReader("./src/main/resources/dev/Initial.json"), listOfMyClassObject);
-            System.out.println(sh);
-            System.out.println(shareList);
+            Type listOfMyClassObject = new TypeToken<ArrayList<Share>>() {
+            }.getType();
+            List<Share> shareList = gs.fromJson(new FileReader("./src/main/resources/dev/Initial.json"),
+                    listOfMyClassObject);
             for (Share share : shareList) {
                 PreparedStatement prepStatement = connShares.prepareStatement(strSql);
                 prepStatement.setInt(1, share.getEdrpou());
@@ -53,11 +45,6 @@ public class Program {
         } catch (FileNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-
-
         ConnectionDB.closeConnection("shares");
-        ConnectionDB.closeConnection("changes");
-
-
     }
 }
