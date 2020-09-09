@@ -14,6 +14,7 @@ public class ShareChanges {
     private String fName;
     @Column(name = "old_value")
     private String oldValue;
+    @Column(name = "new_value")
     private String newValue;
 
     public ShareChanges() {

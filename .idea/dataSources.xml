@@ -21,15 +21,5 @@ E:/IDEA_WorkSpace/registerOfShares/src/main/resources/META-INF/persistence.xml</
       <jdbc-driver>org.h2.Driver</jdbc-driver>
       <jdbc-url>jdbc:h2:file:./target/classes/dev/changes</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="persistence-unit/Hibernate" uuid="a8ebb189-b340-47fb-8a36-1b47a21df18f">
-      <driver-ref>h2.unified</driver-ref>
-      <synchronize>true</synchronize>
-      <imported>true</imported>
-      <remarks>Hibernate
-
-E:/IDEA_WorkSpace/registerOfShares/src/main/resources/META-INF/persistence.xml</remarks>
-      <jdbc-driver>org.h2.Driver</jdbc-driver>
-      <jdbc-url>jdbc:h2:file:./target/classes/dev/shares</jdbc-url>
-    </data-source>
   </component>
 </project>

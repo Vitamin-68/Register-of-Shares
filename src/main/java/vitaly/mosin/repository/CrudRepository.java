@@ -5,6 +5,7 @@ import vitaly.mosin.entity.Share;
 import vitaly.mosin.entity.ShareChanges;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,31 +13,33 @@ import java.util.Optional;
 
 public class CrudRepository implements ImmutableRepository, MutableRepository {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(CrudRepository.class);
-    private final EntityManager entityManager;
+    private final EntityManager shareEntityManager;
+    private final EntityManager changeEntityManager;
     private static final String QUERY_SELECT_ALL = "SELECT e FROM %s e";
     private static final String QUERY_SELECT_BY_ID = "SELECT e FROM %s e WHERE e.id = %s";
     private static final String QUERY_SELECT_BY_FIELD = "SELECT e FROM %s e WHERE e.%s = %s";
 
-    public CrudRepository(EntityManager entityManager) {
-        this.entityManager = entityManagerFactory.createEntityManager();;
+    public CrudRepository(EntityManagerFactory shareFactory, EntityManagerFactory changeFactory) {
+        this.shareEntityManager = shareFactory.createEntityManager();
+        this.changeEntityManager = changeFactory.createEntityManager();
     }
 
     @Override
     public Optional<List<Share>> findAll() {
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityTransaction transaction = shareEntityManager.getTransaction();
         transaction.begin();
         String queryString = String.format(QUERY_SELECT_ALL, Share.class);
-        final List<Share> result = entityManager.createQuery(queryString).getResultList();
+        final List<Share> result = shareEntityManager.createQuery(queryString).getResultList();
         transaction.commit();
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
     @Override
     public Optional<List<Share>> findByField(String fieldName, Object value) {
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityTransaction transaction = shareEntityManager.getTransaction();
         transaction.begin();
         String queryString = String.format(QUERY_SELECT_BY_FIELD, Share.class, fieldName, value);
-        final List<Share> result = entityManager.createQuery(queryString).getResultList();
+        final List<Share> result = shareEntityManager.createQuery(queryString).getResultList();
         transaction.commit();
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
@@ -47,32 +50,71 @@ public class CrudRepository implements ImmutableRepository, MutableRepository {
             log.error("Entity already exists");
             throw new IllegalStateException("Entity already exist");
         }
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityTransaction transaction = shareEntityManager.getTransaction();
         transaction.begin();
         entity.setStatus(true);
-        entityManager.merge(entity);
+        shareEntityManager.merge(entity);
         transaction.commit();
         return entity;
-    }
-
-    private boolean isEntityExists(Share entity) {
-        return (entityManager.find(entity.getClass(), entity.getEdrpou()) != null);
     }
 
     @Override
     public Share update(Share entity) {
         Optional<List<Share>> result;
         Share oldEntity;
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityTransaction transaction = shareEntityManager.getTransaction();
         transaction.begin();
         result = findByField("edrpou", entity.getEdrpou());
         if (result.isPresent()) {
              oldEntity = result.get().get(0);
-            List<ShareChanges> listCh =  notifyChanges(oldEntity, entity);
-            entityManager.merge(entity);
-        }
+            List<ShareChanges> changesList =  notifyChanges(oldEntity, entity);
+            shareEntityManager.merge(entity);
+            mergeChanges(changesList);
+        } else log.info("Share not found");
         transaction.commit();
         return entity;
+    }
+
+    @Override
+    public Share delete(int code) {
+        Optional<List<Share>> result;
+        Share delEntity;
+        EntityTransaction transaction = shareEntityManager.getTransaction();
+        transaction.begin();
+        result = findByField("edrpou", code);
+        if (result.isPresent()) {
+            delEntity = result.get().get(0);
+            delEntity.setStatus(false);
+            shareEntityManager.merge(delEntity);
+            List<ShareChanges> changesList = new ArrayList<>();
+            ShareChanges changes = statusDeleted(delEntity);
+            changesList.add(changes);
+            mergeChanges(changesList);
+        } else log.info("Share not found");
+        transaction.commit();
+        return null;
+    }
+
+    private ShareChanges statusDeleted(Share entity){
+        ShareChanges changes = new ShareChanges();
+        changes.setEdrpou(entity.getEdrpou());
+        changes.setfName("status");
+        changes.setOldValue("Active");
+        changes.setNewValue("Deleted");
+        return changes;
+    }
+
+    private boolean isEntityExists(Share entity) {
+        return (shareEntityManager.find(entity.getClass(), entity.getEdrpou()) != null);
+    }
+
+    private void mergeChanges(List<ShareChanges> list){
+        EntityTransaction transactionChange = changeEntityManager.getTransaction();
+        transactionChange.begin();
+        for(ShareChanges sChange : list) {
+            changeEntityManager.merge(sChange);
+        }
+        transactionChange.commit();
     }
 
     private List<ShareChanges> notifyChanges(Share oldEntity, Share newEntity) {
@@ -128,10 +170,5 @@ public class CrudRepository implements ImmutableRepository, MutableRepository {
             listChanges.add(shChange);
         }
         return listChanges;
-    }
-
-    @Override
-    public Share delete(int code) {
-        return null;
     }
 }
