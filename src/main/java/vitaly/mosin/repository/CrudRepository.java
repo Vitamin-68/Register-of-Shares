@@ -53,6 +53,7 @@ public class CrudRepository implements ImmutableRepository, MutableRepository {
         EntityTransaction transaction = shareEntityManager.getTransaction();
         transaction.begin();
         entity.setStatus(true);
+        entity.setCost(entity.getQuantity()*entity.getPrice());
         shareEntityManager.merge(entity);
         transaction.commit();
         return entity;
@@ -67,6 +68,7 @@ public class CrudRepository implements ImmutableRepository, MutableRepository {
         result = findByField("edrpou", entity.getEdrpou());
         if (result.isPresent()) {
              oldEntity = result.get().get(0);
+             entity.setCost(entity.getQuantity()*entity.getPrice());
             List<ShareChanges> changesList =  notifyChanges(oldEntity, entity);
             shareEntityManager.merge(entity);
             mergeChanges(changesList);
@@ -141,7 +143,7 @@ public class CrudRepository implements ImmutableRepository, MutableRepository {
             shChange.setNewValue(Double.toString(newEntity.getPrice()));
             listChanges.add(shChange);
         }
-        if (oldEntity.getCost() != newEntity.getCost()) {
+        if (oldEntity.getCost() != newEntity.getQuantity()*newEntity.getPrice()) {
             shChange.setEdrpou(oldEntity.getEdrpou());
             shChange.setfName("cost");
             shChange.setOldValue(Double.toString(oldEntity.getCost()));

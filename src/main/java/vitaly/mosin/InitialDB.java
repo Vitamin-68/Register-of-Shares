@@ -36,7 +36,7 @@ public class InitialDB {
                 prepStatement.setInt(1, share.getEdrpou());
                 prepStatement.setInt(2, share.getQuantity());
                 prepStatement.setDouble(3, share.getPrice());
-                prepStatement.setDouble(4, share.getCost());
+                prepStatement.setDouble(4, share.getPrice()*share.getQuantity());
                 prepStatement.setDate(5, Date.valueOf(share.getDate()));
                 prepStatement.setString(6, share.getComment());
                 prepStatement.setBoolean(7, share.isStatus());
